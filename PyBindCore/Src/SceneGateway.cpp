@@ -75,9 +75,10 @@ namespace PyFacade
                 auto polygon = std::make_unique<Eg::SyPolygon>();
                 polygon->basePoint = Ut::Vec2d(snapshot.basePoint.x, snapshot.basePoint.y);
                 polygon->bClosed = snapshot.closed;
-                polygon->vVertices.reserve(snapshot.points.size());
+                auto& verts = polygon->verticesMutable();
+                verts.reserve(snapshot.points.size());
                 for (const Vec2& p : snapshot.points)
-                    polygon->vVertices.emplace_back(p.x, p.y);
+                    verts.emplace_back(p.x, p.y);
                 polygon->id = snapshot.id;
                 return polygon;
             }
@@ -118,8 +119,9 @@ namespace PyFacade
             case Eg::EType::POLYGON:
             {
                 const auto& polygon = static_cast<const Eg::SyPolygon&>(entity);
-                snapshot.points.reserve(polygon.vVertices.size());
-                for (const Ut::Vec2d& p : polygon.vVertices)
+                const auto& verts = polygon.vertices();
+                snapshot.points.reserve(verts.size());
+                for (const Ut::Vec2d& p : verts)
                     snapshot.points.push_back(toVec2(p));
                 return snapshot;
             }

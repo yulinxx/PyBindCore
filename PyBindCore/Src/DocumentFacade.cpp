@@ -150,7 +150,7 @@ namespace PyFacade
             return false;
         }
 
-        Eg::SyEntity* entity = m_scene->findEntityById(ref.id);
+        Eg::SyEntity* entity = m_scene->findSyEntityById(ref.id);
         if (!entity)
         {
             setError("Entity not found");
@@ -213,7 +213,7 @@ namespace PyFacade
         if (!m_scene || !ref.valid())
             return std::nullopt;
 
-        Eg::SyEntity* entity = m_scene->findEntityById(ref.id);
+        Eg::SyEntity* entity = m_scene->findSyEntityById(ref.id);
         if (!entity)
             return std::nullopt;
 
