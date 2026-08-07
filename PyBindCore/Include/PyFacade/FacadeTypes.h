@@ -1,4 +1,8 @@
-#pragma once
+﻿#pragma once
+
+// ABI 说明：FacadeTypes.h 定义 PyFacade 值类型，用于隔离 Engine C++ 类型与 Python 绑定层。
+// Eg::EntityId / Eg::EType 仅在内部类型转换中使用，不直接暴露到 Python。
+// 本头文件属于 PyBindCore 内部 C++ ABI 层，不作为跨 DLL 稳定 ABI 承诺。
 
 #include "Engine/EntityIdGenerator.h"
 #include "Engine/SyEntity/SyEntity.h"

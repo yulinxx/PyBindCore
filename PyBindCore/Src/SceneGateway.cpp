@@ -1,4 +1,4 @@
-#include "PyFacade/SceneGateway.h"
+﻿#include "PyFacade/SceneGateway.h"
 
 #include "Engine2D/Core/SceneManager.h"
 #include "Engine2D/SyEntity/SyLine.h"
@@ -103,8 +103,8 @@ namespace PyFacade
             case Eg::EType::LINE:
             {
                 const auto& line = static_cast<const Eg::SyLine&>(entity);
-                snapshot.points.reserve(line.vPoints.size());
-                for (const Ut::Vec2d& p : line.vPoints)
+                snapshot.points.reserve(line.pointRef().size());
+                for (const Ut::Vec2d& p : line.pointRef())
                     snapshot.points.push_back(toVec2(p));
                 return snapshot;
             }

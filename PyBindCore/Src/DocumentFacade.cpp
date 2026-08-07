@@ -1,4 +1,4 @@
-#include "PyFacade/DocumentFacade.h"
+﻿#include "PyFacade/DocumentFacade.h"
 
 #include "PyFacade/SceneGateway.h"
 
@@ -232,16 +232,6 @@ namespace PyFacade
         if (m_scene)
             m_scene->clearScene();
         m_path.clear();
-    }
-
-    Eg::SceneManager& DocumentFacade::scene()
-    {
-        return *m_scene;
-    }
-
-    const Eg::SceneManager& DocumentFacade::scene() const
-    {
-        return *m_scene;
     }
 
     void DocumentFacade::setError(std::string message)
