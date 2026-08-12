@@ -1,4 +1,4 @@
-﻿#include "PyFacade/DocumentFacade.h"
+#include "PyFacade/DocumentFacade.h"
 
 #include "PyFacade/SceneGateway.h"
 
@@ -49,9 +49,8 @@ namespace PyFacade
         return std::shared_ptr<DocumentFacade>(new DocumentFacade());
     }
 
-    std::pair<std::shared_ptr<DocumentFacade>, std::string> DocumentFacade::open(const std::string& path)
+    std::pair<std::shared_ptr<DocumentFacade>, std::string> DocumentFacade::open(const std::string& /*path*/)
     {
-        (void)path;
         return {
             nullptr,
             "Document.open is not implemented yet; use Document.create() for in-memory scenes"
@@ -220,9 +219,8 @@ namespace PyFacade
         return exportEntity(*entity);
     }
 
-    bool DocumentFacade::save(const std::string& path)
+    bool DocumentFacade::save(const std::string& /*path*/)
     {
-        (void)path;
         setError("Document.save is not implemented yet");
         return false;
     }
