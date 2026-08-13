@@ -77,4 +77,4 @@ namespace PyFacade
     };
 
     std::string entityTypeToString(Eg::EType type);
-}
+}  // namespace PyFacade

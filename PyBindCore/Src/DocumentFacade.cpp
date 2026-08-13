@@ -20,16 +20,14 @@ namespace PyFacade
 
         Ut::BBox2d toUtBBox2(const BBox2& box)
         {
-            return Ut::BBox2d(
-                Ut::Vec2d(box.minX, box.minY),
-                Ut::Vec2d(box.maxX, box.maxY));
+            return Ut::BBox2d(Ut::Vec2d(box.minX, box.minY), Ut::Vec2d(box.maxX, box.maxY));
         }
 
         EntityRef makeRef(Eg::EntityId id)
         {
             return EntityRef{ id };
         }
-    }
+    }  // namespace
 
     DocumentFacade::DocumentFacade()
         : m_scene(std::make_unique<Eg::SceneManager>())
@@ -51,10 +49,7 @@ namespace PyFacade
 
     std::pair<std::shared_ptr<DocumentFacade>, std::string> DocumentFacade::open(const std::string& /*path*/)
     {
-        return {
-            nullptr,
-            "Document.open is not implemented yet; use Document.create() for in-memory scenes"
-        };
+        return { nullptr, "Document.open is not implemented yet; use Document.create() for in-memory scenes" };
     }
 
     bool DocumentFacade::isValid() const
@@ -165,14 +160,18 @@ namespace PyFacade
     {
         std::vector<EntityRef> refs;
         if (!m_scene || !box.isValid())
+        {
             return refs;
+        }
 
         const Eg::VecSyEntityPtr entities = m_scene->queryByBox(toUtBBox2(box), containedOnly);
         refs.reserve(entities.size());
         for (Eg::SyEntity* entity : entities)
         {
             if (entity)
+            {
                 refs.push_back(makeRef(entity->id));
+            }
         }
         return refs;
     }
@@ -180,7 +179,9 @@ namespace PyFacade
     SceneSnapshot DocumentFacade::exportSnapshot() const
     {
         if (!m_scene)
+        {
             return SceneSnapshot{};
+        }
         return PyFacade::exportSnapshot(*m_scene);
     }
 
@@ -210,11 +211,15 @@ namespace PyFacade
     std::optional<EntitySnapshot> DocumentFacade::getEntity(EntityRef ref) const
     {
         if (!m_scene || !ref.valid())
+        {
             return std::nullopt;
+        }
 
         Eg::SyEntity* entity = m_scene->findSyEntityById(ref.id);
         if (!entity)
+        {
             return std::nullopt;
+        }
 
         return exportEntity(*entity);
     }
@@ -228,7 +233,9 @@ namespace PyFacade
     void DocumentFacade::close()
     {
         if (m_scene)
+        {
             m_scene->clearScene();
+        }
         m_path.clear();
     }
 
@@ -236,4 +243,4 @@ namespace PyFacade
     {
         m_lastError = std::move(message);
     }
-}
+}  // namespace PyFacade

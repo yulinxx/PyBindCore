@@ -58,4 +58,4 @@ namespace PyFacade
         std::string m_path;
         std::string m_lastError;
     };
-}
+}  // namespace PyFacade

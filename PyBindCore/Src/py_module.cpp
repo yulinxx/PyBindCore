@@ -13,7 +13,7 @@ PYBIND11_MODULE(_sanyi_core, m)
 
     m.def("version", []() {
         return "0.1.0";
-        });
+    });
 
     init_types(m);
     init_document(m);

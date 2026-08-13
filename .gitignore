@@ -1,0 +1,64 @@
+# ============================================================
+# PyBindCore 子模块忽略规则（跨平台）
+# ------------------------------------------------------------
+# 本仓库为 git 子模块，内部由子模块自己的 .gitignore 控制忽略。
+# 该文件用于统一忽略 PyBind11 + CMake 构建产生的中间产物。
+# ============================================================
+
+# ---- PyBind 扩展模块产物（跨平台后缀）----
+#   Windows → *.pyd / *.lib / *.exp / *.dll
+#   macOS   → *.so (*.cpython-*-darwin.*)
+#   Linux   → *.so (*.cpython-*-linux-*.so)
+**/*.pyd
+**/*.so
+**/*.dll
+**/*.dylib
+**/*.lib
+**/*.exp
+**/*.obj
+**/*.o
+**/*.pdb
+**/*.whl
+**/*.wasi
+
+# ---- CMake / 构建系统中间文件 ----
+**/cmake-build-*/
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/*.cmake
+**/Makefile
+**/*.ninja
+**/*.ninja_deps
+**/*.ninja_log
+**/_deps/
+
+# ---- Python ----
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+**/venv/
+**/.venv/
+*.egg-info/
+**/*.egg-info/
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble/
+.fseventsd/
+.Spotlight-V100/
+.Trashes/
+._*            # AppleDouble / 资源派生文件 (Finder 产生的隐藏文件)
+
+# Windows
+Thumbs.db
+desktop.ini
+
