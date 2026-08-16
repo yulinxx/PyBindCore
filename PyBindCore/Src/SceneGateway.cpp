@@ -213,7 +213,7 @@ namespace PyFacade
 
                 if (entity->id == 0)
                 {
-                    entity->id = Eg::EntityIdGenerator::instance().getNextId();
+                    entity->id = Eg::EntityIdGenerator::instance().getNextPersistentId();
                 }
 
                 entitiesToAdd.push_back(std::move(entity));
