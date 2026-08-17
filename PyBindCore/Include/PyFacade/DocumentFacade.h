@@ -23,6 +23,12 @@ namespace PyFacade
     class DocumentFacade
     {
     public:
+        DocumentFacade();
+        ~DocumentFacade();
+        DocumentFacade(const DocumentFacade&) = delete;
+        DocumentFacade& operator=(const DocumentFacade&) = delete;
+
+    public:
         static std::shared_ptr<DocumentFacade> create();
         static std::pair<std::shared_ptr<DocumentFacade>, std::string> open(const std::string& path);
 
@@ -46,14 +52,12 @@ namespace PyFacade
         bool save(const std::string& path);
         void close();
 
-        ~DocumentFacade();
-
     private:
-        DocumentFacade();
         explicit DocumentFacade(std::unique_ptr<Eg::SceneManager> scene, std::string path);
 
         void setError(std::string message);
 
+    private:
         std::unique_ptr<Eg::SceneManager> m_scene;
         std::string m_path;
         std::string m_lastError;
