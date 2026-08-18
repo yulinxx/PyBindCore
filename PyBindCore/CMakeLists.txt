@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 4.3)
+cmake_minimum_required(VERSION 4.3)
 
 set(MODULE_NAME "SanYiPyBindCore")
 
@@ -10,20 +10,11 @@ set(PYBIND11_FINDPYTHON ON)
 find_package(Python ${SANYI_PYTHON_VERSION} COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
-set(PYBINDCORE_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/FacadeTypes.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/SceneGateway.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/DocumentFacade.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/py_module.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/py_types.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/py_document.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/py_snapshot.cpp"
+file(GLOB PYBINDCORE_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.cpp"
 )
-
-set(PYBINDCORE_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Include/PyFacade/FacadeTypes.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Include/PyFacade/DocumentFacade.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Include/PyFacade/SceneGateway.h"
+file(GLOB PYBINDCORE_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/PyFacade/*.h"
 )
 
 add_library(${MODULE_NAME} MODULE
