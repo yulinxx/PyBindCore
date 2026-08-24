@@ -61,3 +61,14 @@ message(STATUS "[${MODULE_NAME}]")
 message(STATUS "  Module: _sanyi_core")
 message(STATUS "  Python: ${Python_VERSION}")
 message(STATUS "")
+
+message(STATUS "----------------------------------------")
+
+sanyi_export_imported_target(${MODULE_NAME}
+    LIB_NAME "${MODULE_NAME}"
+    PUBLIC_INCLUDE_DIRS
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include"
+    INTERFACE_LINK_LIBRARIES
+        EngineCommon::EngineCommon
+        Engine2D::Engine2D
+)
