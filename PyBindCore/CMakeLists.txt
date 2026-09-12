@@ -60,8 +60,6 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 message(STATUS "[${MODULE_NAME}]")
 message(STATUS "  Module: _sanyi_core")
 message(STATUS "  Python: ${Python_VERSION}")
-message(STATUS "")
-
 message(STATUS "----------------------------------------")
 
 sanyi_export_imported_target(${MODULE_NAME}
