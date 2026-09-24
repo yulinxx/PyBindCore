@@ -59,6 +59,11 @@ venv/
 # AppleDouble / 资源派生文件 (Finder 产生的隐藏文件)
 ._*
 
+# Linux
+*~
+.directory
+.Trash-*
+
 # Windows
 Thumbs.db
 desktop.ini
