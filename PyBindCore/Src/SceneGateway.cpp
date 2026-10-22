@@ -8,6 +8,8 @@
 
 #include "Ut/Vec.h"
 
+#include <unordered_set>
+
 namespace PyFacade
 {
     namespace
@@ -198,6 +200,9 @@ namespace PyFacade
         {
             std::vector<std::unique_ptr<Eg::SyEntity>> entitiesToAdd;
             entitiesToAdd.reserve(changes.add.size());
+            // 本批已占用的 id：只查场景看不到同批里还没落库的兄弟图元
+            std::unordered_set<Eg::EntityId> claimedIds;
+            claimedIds.reserve(changes.add.size());
             for (const EntitySnapshot& item : changes.add)
             {
                 std::unique_ptr<Eg::SyEntity> entity = entityFromSnapshot(item);
@@ -211,11 +216,29 @@ namespace PyFacade
                     return false;
                 }
 
-                if (entity->id == 0)
+                // id=0 或与场景/本批冲突时分配一个真正空闲的 id。
+                // 直接取 getNextPersistentId() 会撞上已打开文档里占用的低位 id，
+                // insertEntitiesPreserveId 静默丢弃，脚本侧却收到成功。
+                if (entity->id == 0 || claimedIds.find(entity->id) != claimedIds.end())
                 {
-                    entity->id = Eg::EntityIdGenerator::instance().getNextPersistentId();
+                    Eg::EntityId candidate = 0;
+                    for (size_t attempt = 0; attempt < 1000000 && candidate == 0; ++attempt)
+                    {
+                        const Eg::EntityId generated =
+                            Eg::EntityIdGenerator::instance().getNextPersistentId();
+                        if (!scene.findEntityById(generated) && claimedIds.find(generated) == claimedIds.end())
+                        {
+                            candidate = generated;
+                        }
+                    }
+                    if (candidate == 0)
+                    {
+                        return false;
+                    }
+                    entity->id = candidate;
                 }
 
+                claimedIds.insert(entity->id);
                 entitiesToAdd.push_back(std::move(entity));
             }
             scene.insertEntitiesPreserveId(std::move(entitiesToAdd));
