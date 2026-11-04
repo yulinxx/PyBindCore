@@ -18,7 +18,9 @@ namespace PyFacade
             return Ut::Vec2d(v.x, v.y);
         }
 
-        Ut::BBox2d toUtBBox2(const BBox2& box)
+        // 与 SceneGateway 的同名转换函数区分：unity 合批后两个匿名命名空间会并入同一
+        // 翻译单元，同名定义触发 C2084「已有主体」。
+        Ut::BBox2d toUtBBox2Doc(const BBox2& box)
         {
             return Ut::BBox2d(Ut::Vec2d(box.minX, box.minY), Ut::Vec2d(box.maxX, box.maxY));
         }
@@ -164,7 +166,7 @@ namespace PyFacade
             return refs;
         }
 
-        const Eg::VecSyEntityPtr entities = m_scene->queryByBox(toUtBBox2(box), containedOnly);
+        const Eg::VecSyEntityPtr entities = m_scene->queryByBox(toUtBBox2Doc(box), containedOnly);
         refs.reserve(entities.size());
         for (Eg::SyEntity* entity : entities)
         {

@@ -1,5 +1,6 @@
 ﻿#include "PyFacade/SceneGateway.h"
 
+#include "Engine/SyEntity/SyEntity2D.h"
 #include "Engine2D/Core/SceneManager.h"
 #include "Engine2D/SyEntity/SyLine.h"
 #include "Engine2D/SyEntity/SyPoint.h"
@@ -29,7 +30,9 @@ namespace PyFacade
             return BBox2{ box.minPt.x(), box.minPt.y(), box.maxPt.x(), box.maxPt.y() };
         }
 
-        Ut::BBox2d toUtBBox2(const BBox2& box)
+        // 与 DocumentFacade 的同名转换函数区分：unity 合批后两个匿名命名空间会并入同一
+        // 翻译单元，同名定义触发 C2084「已有主体」。
+        Ut::BBox2d toUtBBox2Scene(const BBox2& box)
         {
             return Ut::BBox2d(Ut::Vec2d(box.minX, box.minY), Ut::Vec2d(box.maxX, box.maxY));
         }
@@ -95,8 +98,26 @@ namespace PyFacade
         EntitySnapshot snapshot;
         snapshot.id = entity.id;
         snapshot.type = entityTypeToString(entity.eType);
-        snapshot.basePoint = toVec2(entity.basePoint);
-        snapshot.closed = entity.bClosed;
+
+        // basePoint / bClosed 不在 SyEntity 基类上：Engine 侧已把 2D 语义字段下移到
+        // SyEntity2D 中间层（Engine/SyEntity/SyEntity2D.h:28-29），3D 图元不携带这两个字段。
+        // 只有 2D 图元才需要取，且必须先按类型确认再转换，避免对 3D 图元错误下转。
+        switch (entity.eType)
+        {
+        case Eg::EType::POINT:
+        case Eg::EType::LINE:
+        case Eg::EType::CIRCLE:
+        case Eg::EType::POLYGON:
+        {
+            const auto& entity2d = static_cast<const Eg::SyEntity2D&>(entity);
+            snapshot.basePoint = toVec2(entity2d.basePoint);
+            snapshot.closed = entity2d.bClosed;
+            break;
+        }
+
+        default:
+            break;
+        }
 
         switch (entity.eType)
         {
