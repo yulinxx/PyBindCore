@@ -43,7 +43,8 @@ if(NOT DEFINED SANYI_PYTHON_VERSION)
     set(SANYI_PYTHON_VERSION "3.11")
 endif()
 
-# 本模块没有 C++ 测试，统一关闭兄弟测试（避免顺带编出整套 Engine 测试）
+# 本模块没有 C++ 测试，声明空测试范围（避免顺带编出整套 Engine 测试）。
+# 空参数 = 全部模块不放行，不是「未声明」，这是单开关模型下保留的显式语义。
 sanyi_only_own_tests()
 
 # 严格按依赖顺序：Utility / Log 是叶子，Engine2D 依赖 EngineCommon。
