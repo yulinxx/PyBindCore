@@ -2,6 +2,7 @@
 
 #include "Engine/SyEntity/SyEntity2D.h"
 #include "Engine2D/Core/SceneManager.h"
+#include "Engine2D/Edit/SceneEditService.h"
 #include "Engine2D/SyEntity/SyLine.h"
 #include "Engine2D/SyEntity/SyPoint.h"
 #include "Engine2D/SyEntity/SyCircle.h"
@@ -214,7 +215,8 @@ namespace PyFacade
                     entitiesToRemove.push_back(entity);
                 }
             }
-            scene.deleteEntitiesBatch(entitiesToRemove);
+            SceneEditService directEdit(&scene, nullptr);
+            directEdit.deleteEntitiesDirect(entitiesToRemove);
         }
 
         if (!changes.add.empty())
@@ -262,7 +264,8 @@ namespace PyFacade
                 claimedIds.insert(entity->id);
                 entitiesToAdd.push_back(std::move(entity));
             }
-            scene.insertEntitiesPreserveId(std::move(entitiesToAdd));
+            SceneEditService directEdit(&scene, nullptr);
+            directEdit.insertEntitiesPreserveId(std::move(entitiesToAdd));
         }
 
         return true;
