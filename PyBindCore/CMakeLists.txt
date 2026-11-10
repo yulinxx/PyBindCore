@@ -7,7 +7,10 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../CMake/Utils.cmake")
 endif()
 
 set(PYBIND11_FINDPYTHON ON)
-find_package(Python ${SANYI_PYTHON_VERSION} COMPONENTS Interpreter Development REQUIRED)
+# 使用精确版本：vcpkg 安装 pybind11 会顺带提供 python3（如 3.12）并加入搜索路径，
+# 若按“最低版本”匹配会静默改用该解释器，导致绑定模块 ABI 与本工程声明的
+# SANYI_PYTHON_VERSION 不一致。需要其他版本时显式传 -DSANYI_PYTHON_VERSION=<ver>。
+find_package(Python ${SANYI_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
 
 # pybind11 发现顺序：工具链/包管理器（vcpkg、brew 等）提供的 config → 由
 # Python 解释器自身推导 pip 安装的 config → 直接探测 site-packages。
@@ -48,16 +51,13 @@ if(NOT pybind11_FOUND AND Python_Interpreter_FOUND)
 endif()
 
 if(NOT pybind11_FOUND)
-    if(VCPKG_TARGET_TRIPLET)
-        set(_sanyi_pybind11_triplet "${VCPKG_TARGET_TRIPLET}")
-    else()
-        set(_sanyi_pybind11_triplet "<your-triplet>")
-    endif()
     message(FATAL_ERROR
         "[${MODULE_NAME}] pybind11 not found for Python ${Python_VERSION} (${Python_EXECUTABLE}).\n"
-        "Install it with one of the following commands, then re-run CMake:\n"
-        "  pip:   \"${Python_EXECUTABLE}\" -m pip install \"pybind11>=2.11\"\n"
-        "  vcpkg: <vcpkg-root>/vcpkg install pybind11:${_sanyi_pybind11_triplet} --classic\n"
+        "Install it with:\n"
+        "  \"${Python_EXECUTABLE}\" -m pip install \"pybind11>=2.11\"\n"
+        "Do not use the vcpkg pybind11 port for this project: it pulls vcpkg's python3\n"
+        "and forces FindPython onto that interpreter, which changes the extension ABI\n"
+        "away from the project's pinned Python ${SANYI_PYTHON_VERSION}.\n"
         "Alternatively pass -Dpybind11_DIR=<directory containing pybind11Config.cmake>.")
 endif()
 
