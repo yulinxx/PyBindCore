@@ -38,7 +38,7 @@ project(SanYiPyBindCoreModule
 # MSVC 的 /W4 等选项必须在 project() 之后才能正确判定编译器
 sanyi_setup_compiler_options()
 
-# 集成构建时 SANYI_PYTHON_VERSION 由根 CMakeLists 定义；独立构建给默认值
+# 集成构建时 SANYI_PYTHON_VERSION 由根 CMakeLists 定义；独立构建给最低版本默认值
 if(NOT DEFINED SANYI_PYTHON_VERSION)
     set(SANYI_PYTHON_VERSION "3.11")
 endif()
