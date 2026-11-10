@@ -80,7 +80,8 @@ namespace PyFacade
 
         auto entity = std::make_unique<Eg::SyPoint>(toUtVec2(point));
         const Eg::EntityId id = entity->id;
-        SceneEditService directEdit(m_scene, nullptr);
+        // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
+        SceneEditService directEdit(m_scene.get(), nullptr);
         if (!directEdit.insertEntityPreserveId(std::move(entity)))
         {
             setError("Failed to add point");
@@ -102,7 +103,8 @@ namespace PyFacade
         const std::vector<Ut::Vec2d> points = { toUtVec2(start), toUtVec2(end) };
         auto entity = std::make_unique<Eg::SyLine>(points);
         const Eg::EntityId id = entity->id;
-        SceneEditService directEdit(m_scene, nullptr);
+        // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
+        SceneEditService directEdit(m_scene.get(), nullptr);
         if (!directEdit.insertEntityPreserveId(std::move(entity)))
         {
             setError("Failed to add line");
@@ -131,7 +133,8 @@ namespace PyFacade
         entity->basePoint = toUtVec2(center);
         entity->dRadius = radius;
         const Eg::EntityId id = entity->id;
-        SceneEditService directEdit(m_scene, nullptr);
+        // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
+        SceneEditService directEdit(m_scene.get(), nullptr);
         if (!directEdit.insertEntityPreserveId(std::move(entity)))
         {
             setError("Failed to add circle");
@@ -157,7 +160,8 @@ namespace PyFacade
             return false;
         }
 
-        SceneEditService directEdit(m_scene, nullptr);
+        // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
+        SceneEditService directEdit(m_scene.get(), nullptr);
         directEdit.deleteEntitiesDirect({ entity });
         m_lastError.clear();
         return true;
