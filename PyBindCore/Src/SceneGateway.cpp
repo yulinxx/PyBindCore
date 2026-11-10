@@ -1,12 +1,12 @@
 ﻿#include "PyFacade/SceneGateway.h"
 
-#include "Engine/SyEntity/SyEntity2D.h"
+#include "Engine/AprEntity/AprEntity2D.h"
 #include "Engine2D/Core/SceneManager.h"
 #include "Engine2D/Edit/SceneEditService.h"
-#include "Engine2D/SyEntity/SyLine.h"
-#include "Engine2D/SyEntity/SyPoint.h"
-#include "Engine2D/SyEntity/SyCircle.h"
-#include "Engine2D/SyEntity/SyPolygon.h"
+#include "Engine2D/AprEntity/AprLine.h"
+#include "Engine2D/AprEntity/AprPoint.h"
+#include "Engine2D/AprEntity/AprCircle.h"
+#include "Engine2D/AprEntity/AprPolygon.h"
 
 #include "Ut/Vec.h"
 
@@ -38,11 +38,11 @@ namespace PyFacade
             return Ut::BBox2d(Ut::Vec2d(box.minX, box.minY), Ut::Vec2d(box.maxX, box.maxY));
         }
 
-        std::unique_ptr<Eg::SyEntity> entityFromSnapshot(const EntitySnapshot& snapshot)
+        std::unique_ptr<Eg::AprEntity> entityFromSnapshot(const EntitySnapshot& snapshot)
         {
             if (snapshot.type == "point")
             {
-                auto point = std::make_unique<Eg::SyPoint>(Ut::Vec2d(snapshot.basePoint.x, snapshot.basePoint.y));
+                auto point = std::make_unique<Eg::AprPoint>(Ut::Vec2d(snapshot.basePoint.x, snapshot.basePoint.y));
                 point->id = snapshot.id;
                 return point;
             }
@@ -61,14 +61,14 @@ namespace PyFacade
                     return nullptr;
                 }
 
-                auto line = std::make_unique<Eg::SyLine>(points);
+                auto line = std::make_unique<Eg::AprLine>(points);
                 line->id = snapshot.id;
                 return line;
             }
 
             if (snapshot.type == "circle")
             {
-                auto circle = std::make_unique<Eg::SyCircle>();
+                auto circle = std::make_unique<Eg::AprCircle>();
                 circle->basePoint = Ut::Vec2d(snapshot.basePoint.x, snapshot.basePoint.y);
                 circle->dRadius = snapshot.radius;
                 circle->id = snapshot.id;
@@ -77,7 +77,7 @@ namespace PyFacade
 
             if (snapshot.type == "polygon")
             {
-                auto polygon = std::make_unique<Eg::SyPolygon>();
+                auto polygon = std::make_unique<Eg::AprPolygon>();
                 polygon->basePoint = Ut::Vec2d(snapshot.basePoint.x, snapshot.basePoint.y);
                 polygon->bClosed = snapshot.closed;
                 auto& verts = polygon->verticesMutable();
@@ -94,14 +94,14 @@ namespace PyFacade
         }
     }  // namespace
 
-    std::optional<EntitySnapshot> exportEntity(const Eg::SyEntity& entity)
+    std::optional<EntitySnapshot> exportEntity(const Eg::AprEntity& entity)
     {
         EntitySnapshot snapshot;
         snapshot.id = entity.id;
         snapshot.type = entityTypeToString(entity.eType);
 
-        // basePoint / bClosed 不在 SyEntity 基类上：Engine 侧已把 2D 语义字段下移到
-        // SyEntity2D 中间层（Engine/SyEntity/SyEntity2D.h:28-29），3D 图元不携带这两个字段。
+        // basePoint / bClosed 不在 AprEntity 基类上：Engine 侧已把 2D 语义字段下移到
+        // AprEntity2D 中间层（Engine/AprEntity/AprEntity2D.h:28-29），3D 图元不携带这两个字段。
         // 只有 2D 图元才需要取，且必须先按类型确认再转换，避免对 3D 图元错误下转。
         switch (entity.eType)
         {
@@ -110,7 +110,7 @@ namespace PyFacade
         case Eg::EType::CIRCLE:
         case Eg::EType::POLYGON:
         {
-            const auto& entity2d = static_cast<const Eg::SyEntity2D&>(entity);
+            const auto& entity2d = static_cast<const Eg::AprEntity2D&>(entity);
             snapshot.basePoint = toVec2(entity2d.basePoint);
             snapshot.closed = entity2d.bClosed;
             break;
@@ -127,7 +127,7 @@ namespace PyFacade
 
         case Eg::EType::LINE:
         {
-            const auto& line = static_cast<const Eg::SyLine&>(entity);
+            const auto& line = static_cast<const Eg::AprLine&>(entity);
             snapshot.points.reserve(line.pointRef().size());
             for (const Ut::Vec2d& p : line.pointRef())
             {
@@ -138,14 +138,14 @@ namespace PyFacade
 
         case Eg::EType::CIRCLE:
         {
-            const auto& circle = static_cast<const Eg::SyCircle&>(entity);
+            const auto& circle = static_cast<const Eg::AprCircle&>(entity);
             snapshot.radius = circle.dRadius;
             return snapshot;
         }
 
         case Eg::EType::POLYGON:
         {
-            const auto& polygon = static_cast<const Eg::SyPolygon&>(entity);
+            const auto& polygon = static_cast<const Eg::AprPolygon&>(entity);
             const auto& verts = polygon.vertices();
             snapshot.points.reserve(verts.size());
             for (const Ut::Vec2d& p : verts)
@@ -168,7 +168,7 @@ namespace PyFacade
         Ut::BBox2d bounds;
         bool hasBounds = false;
 
-        for (Eg::SyEntity* entity : scene.getAllEntities())
+        for (Eg::AprEntity* entity : scene.getAllEntities())
         {
             if (!entity)
             {
@@ -206,11 +206,11 @@ namespace PyFacade
     {
         if (!changes.remove.empty())
         {
-            std::vector<Eg::SyEntity*> entitiesToRemove;
+            std::vector<Eg::AprEntity*> entitiesToRemove;
             entitiesToRemove.reserve(changes.remove.size());
             for (Eg::EntityId id : changes.remove)
             {
-                if (Eg::SyEntity* entity = scene.findEntityById(id))
+                if (Eg::AprEntity* entity = scene.findEntityById(id))
                 {
                     entitiesToRemove.push_back(entity);
                 }
@@ -221,14 +221,14 @@ namespace PyFacade
 
         if (!changes.add.empty())
         {
-            std::vector<std::unique_ptr<Eg::SyEntity>> entitiesToAdd;
+            std::vector<std::unique_ptr<Eg::AprEntity>> entitiesToAdd;
             entitiesToAdd.reserve(changes.add.size());
             // 本批已占用的 id：只查场景看不到同批里还没落库的兄弟图元
             std::unordered_set<Eg::EntityId> claimedIds;
             claimedIds.reserve(changes.add.size());
             for (const EntitySnapshot& item : changes.add)
             {
-                std::unique_ptr<Eg::SyEntity> entity = entityFromSnapshot(item);
+                std::unique_ptr<Eg::AprEntity> entity = entityFromSnapshot(item);
                 if (!entity)
                 {
                     return false;

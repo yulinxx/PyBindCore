@@ -5,7 +5,7 @@
 // 本头文件属于 PyBindCore 内部 C++ ABI 层，不作为跨 DLL 稳定 ABI 承诺。
 
 #include "Engine/EntityIdGenerator.h"
-#include "Engine/SyEntity/SyEntity.h"
+#include "Engine/AprEntity/AprEntity.h"
 
 #include <cstdint>
 #include <optional>

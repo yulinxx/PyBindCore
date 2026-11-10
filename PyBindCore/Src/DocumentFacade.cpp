@@ -4,9 +4,9 @@
 
 #include "Engine2D/Core/SceneManager.h"
 #include "Engine2D/Edit/SceneEditService.h"
-#include "Engine2D/SyEntity/SyLine.h"
-#include "Engine2D/SyEntity/SyPoint.h"
-#include "Engine2D/SyEntity/SyCircle.h"
+#include "Engine2D/AprEntity/AprLine.h"
+#include "Engine2D/AprEntity/AprPoint.h"
+#include "Engine2D/AprEntity/AprCircle.h"
 
 #include "Ut/Vec.h"
 
@@ -78,7 +78,7 @@ namespace PyFacade
             return EntityRef{};
         }
 
-        auto entity = std::make_unique<Eg::SyPoint>(toUtVec2(point));
+        auto entity = std::make_unique<Eg::AprPoint>(toUtVec2(point));
         const Eg::EntityId id = entity->id;
         // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
         SceneEditService directEdit(m_scene.get(), nullptr);
@@ -101,7 +101,7 @@ namespace PyFacade
         }
 
         const std::vector<Ut::Vec2d> points = { toUtVec2(start), toUtVec2(end) };
-        auto entity = std::make_unique<Eg::SyLine>(points);
+        auto entity = std::make_unique<Eg::AprLine>(points);
         const Eg::EntityId id = entity->id;
         // SceneEditService 只持有裸指针，这里从 unique_ptr 取地址，不转移所有权
         SceneEditService directEdit(m_scene.get(), nullptr);
@@ -129,7 +129,7 @@ namespace PyFacade
             return EntityRef{};
         }
 
-        auto entity = std::make_unique<Eg::SyCircle>();
+        auto entity = std::make_unique<Eg::AprCircle>();
         entity->basePoint = toUtVec2(center);
         entity->dRadius = radius;
         const Eg::EntityId id = entity->id;
@@ -153,7 +153,7 @@ namespace PyFacade
             return false;
         }
 
-        Eg::SyEntity* entity = m_scene->findSyEntityById(ref.id);
+        Eg::AprEntity* entity = m_scene->findAprEntityById(ref.id);
         if (!entity)
         {
             setError("Entity not found");
@@ -175,9 +175,9 @@ namespace PyFacade
             return refs;
         }
 
-        const Eg::VecSyEntityPtr entities = m_scene->queryByBox(toUtBBox2Doc(box), containedOnly);
+        const Eg::VecAprEntityPtr entities = m_scene->queryByBox(toUtBBox2Doc(box), containedOnly);
         refs.reserve(entities.size());
-        for (Eg::SyEntity* entity : entities)
+        for (Eg::AprEntity* entity : entities)
         {
             if (entity)
             {
@@ -226,7 +226,7 @@ namespace PyFacade
             return std::nullopt;
         }
 
-        Eg::SyEntity* entity = m_scene->findSyEntityById(ref.id);
+        Eg::AprEntity* entity = m_scene->findAprEntityById(ref.id);
         if (!entity)
         {
             return std::nullopt;

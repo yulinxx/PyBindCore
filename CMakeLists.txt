@@ -10,7 +10,7 @@
 #
 #   1) 复用仓库统一配置，不自己手搓一套，避免与主工程漂移：
 #        ../Config.cmake               —— vcpkg / Qt 路径、MSVC 运行库、模块开关
-#        ../CMake/StandaloneInit.cmake —— SANYI_ROOT、编译选项、GTest 查找、兄弟模块拉入
+#        ../CMake/StandaloneInit.cmake —— APR_ROOT、编译选项、GTest 查找、兄弟模块拉入
 #      与 Log / FileIO / Engine 系列的独立入口保持同一套写法。
 #
 #   2) PyBindCore 是 pybind11 扩展模块（Python MODULE，非 DLL），内层 PRIVATE
@@ -18,42 +18,42 @@
 #      Utility / Log 一起拉进来构建。
 #
 #   3) 当前没有 C++ 侧测试（无 Test 目录）：它的契约是 Python 侧的
-#      _sanyi_core 模块接口，验证放在 Python 集成测试层。示例程序同样
-#      以 Python 脚本形态存在（Python/sanyi 包结构建立后再补），暂缓。
+#      _apr_core 模块接口，验证放在 Python 集成测试层。示例程序同样
+#      以 Python 脚本形态存在（Python/apr 包结构建立后再补），暂缓。
 #
 # 用法：
 #   cmake -S PyBindCore -B PyBindCore/build
-#   cmake --build PyBindCore/build --config Release --target SanYiPyBindCore
+#   cmake --build PyBindCore/build --config Release --target AprPyBindCore
 # ============================================================================
 
 include(${CMAKE_CURRENT_LIST_DIR}/../Config.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../CMake/StandaloneInit.cmake)
 
-project(SanYiPyBindCoreModule
+project(AprPyBindCoreModule
     VERSION 1.0.0
-    DESCRIPTION "SanYi CAD pybind11 facade extension (_sanyi_core)"
+    DESCRIPTION "April CAD pybind11 facade extension (_apr_core)"
     LANGUAGES CXX
 )
 
 # MSVC 的 /W4 等选项必须在 project() 之后才能正确判定编译器
-sanyi_setup_compiler_options()
+apr_setup_compiler_options()
 
-# 集成构建时 SANYI_PYTHON_VERSION 由根 CMakeLists 定义；独立构建给最低版本默认值
-if(NOT DEFINED SANYI_PYTHON_VERSION)
-    set(SANYI_PYTHON_VERSION "3.11")
+# 集成构建时 APR_PYTHON_VERSION 由根 CMakeLists 定义；独立构建给默认值
+if(NOT DEFINED APR_PYTHON_VERSION)
+    set(APR_PYTHON_VERSION "3.11")
 endif()
 
 # 本模块没有 C++ 测试，声明空测试范围（避免顺带编出整套 Engine 测试）。
 # 空参数 = 全部模块不放行，不是「未声明」，这是单开关模型下保留的显式语义。
-sanyi_only_own_tests()
+apr_only_own_tests()
 
 # 严格按依赖顺序：Utility / Log 是叶子，Engine2D 依赖 EngineCommon。
-sanyi_add_sibling(Utility      "${SANYI_UTILITY_DIR}")
-sanyi_add_sibling(Log          "${SANYI_LOG_DIR}")
-sanyi_add_sibling(EngineCommon "${SANYI_ENGINE_COMMON_DIR}")
-sanyi_add_sibling(Engine2D     "${SANYI_ENGINE_2D_DIR}")
+apr_add_sibling(Utility      "${APR_UTILITY_DIR}")
+apr_add_sibling(Log          "${APR_LOG_DIR}")
+apr_add_sibling(EngineCommon "${APR_ENGINE_COMMON_DIR}")
+apr_add_sibling(Engine2D     "${APR_ENGINE_2D_DIR}")
 
-# 内层：创建 SanYiPyBindCore 扩展模块、构建后拷贝进 Python/sanyi、输出状态
+# 内层：创建 AprPyBindCore 扩展模块、构建后拷贝进 Python/apr、输出状态
 add_subdirectory(PyBindCore)
 
 # --- 独立构建摘要 -----------------------------------------------------------
@@ -62,7 +62,7 @@ message(STATUS "========================================")
 message(STATUS "  [Standalone: ${PROJECT_NAME}]")
 message(STATUS "========================================")
 message(STATUS "  Version:        ${PROJECT_VERSION}")
-message(STATUS "  Python:         ${SANYI_PYTHON_VERSION}")
+message(STATUS "  Python:         ${APR_PYTHON_VERSION}")
 message(STATUS "  Output:         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 message(STATUS "========================================")
 message(STATUS "")

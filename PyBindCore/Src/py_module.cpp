@@ -7,9 +7,9 @@ void init_types(py::module_& m);
 void init_document(py::module_& m);
 void init_snapshot(py::module_& m);
 
-PYBIND11_MODULE(_sanyi_core, m)
+PYBIND11_MODULE(_apr_core, m)
 {
-    m.doc() = "SanYi CAD PyBindCore facade extension";
+    m.doc() = "April CAD PyBindCore facade extension";
 
     m.def("version", []() {
         return "0.1.0";
