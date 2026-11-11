@@ -38,9 +38,11 @@ project(AprPyBindCoreModule
 # MSVC 的 /W4 等选项必须在 project() 之后才能正确判定编译器
 apr_setup_compiler_options()
 
-# 集成构建时 APR_PYTHON_VERSION 由根 CMakeLists 定义；独立构建给默认值
+# 集成构建时 APR_PYTHON_VERSION 由根 CMakeLists 定义；独立构建默认留空，
+# 交给内层 find_package(Python 3.11) 自动匹配 vcpkg pybind11 配套的解释器，
+# 这样每个人本地小版本不同也不必改这行；需要锁版本时用 -DAPR_PYTHON_VERSION=3.x。
 if(NOT DEFINED APR_PYTHON_VERSION)
-    set(APR_PYTHON_VERSION "3.11")
+    set(APR_PYTHON_VERSION "")
 endif()
 
 # 本模块没有 C++ 测试，声明空测试范围（避免顺带编出整套 Engine 测试）。
@@ -57,12 +59,16 @@ apr_add_sibling(Engine2D     "${APR_ENGINE_2D_DIR}")
 add_subdirectory(PyBindCore)
 
 # --- 独立构建摘要 -----------------------------------------------------------
+set(_apr_python_display "${APR_PYTHON_VERSION}")
+if(_apr_python_display STREQUAL "")
+    set(_apr_python_display "auto (>= 3.11, matched from vcpkg pybind11)")
+endif()
 message(STATUS "")
 message(STATUS "========================================")
 message(STATUS "  [Standalone: ${PROJECT_NAME}]")
 message(STATUS "========================================")
 message(STATUS "  Version:        ${PROJECT_VERSION}")
-message(STATUS "  Python:         ${APR_PYTHON_VERSION}")
+message(STATUS "  Python:         ${_apr_python_display}")
 message(STATUS "  Output:         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 message(STATUS "========================================")
 message(STATUS "")

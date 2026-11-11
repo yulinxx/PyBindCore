@@ -7,10 +7,14 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../CMake/Utils.cmake")
 endif()
 
 set(PYBIND11_FINDPYTHON ON)
-# 使用精确版本：vcpkg 安装 pybind11 会顺带提供 python3（如 3.12）并加入搜索路径，
-# 若按“最低版本”匹配会静默改用该解释器，导致绑定模块 ABI 与本工程声明的
-# APR_PYTHON_VERSION 不一致。需要其他版本时显式传 -DAPR_PYTHON_VERSION=<ver>。
-find_package(Python ${APR_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
+# 不传 EXACT：每个人 vcpkg 装的 pybind11 会带出不同 Python 小版本（3.12/3.13/...），
+# vcpkg 工具链已把它设为最高优先级，CMake 自动匹配到的就是跟 pybind11 配套的那个，
+# ABI 保证一致。若需强制指定版本（如 CI），用 -DAPR_PYTHON_VERSION=3.x 覆盖。
+if(DEFINED APR_PYTHON_VERSION AND NOT APR_PYTHON_VERSION STREQUAL "")
+    find_package(Python ${APR_PYTHON_VERSION} COMPONENTS Interpreter Development REQUIRED)
+else()
+    find_package(Python 3.11 COMPONENTS Interpreter Development REQUIRED)
+endif()
 
 # pybind11 发现顺序：工具链/包管理器（vcpkg、brew 等）提供的 config → 由
 # Python 解释器自身推导 pip 安装的 config → 直接探测 site-packages。
@@ -57,7 +61,7 @@ if(NOT pybind11_FOUND)
         "  \"${Python_EXECUTABLE}\" -m pip install \"pybind11>=2.11\"\n"
         "Do not use the vcpkg pybind11 port for this project: it pulls vcpkg's python3\n"
         "and forces FindPython onto that interpreter, which changes the extension ABI\n"
-        "away from the project's pinned Python ${APR_PYTHON_VERSION}.\n"
+        "away from the Python CMake already selected (${Python_VERSION}).\n"
         "Alternatively pass -Dpybind11_DIR=<directory containing pybind11Config.cmake>.")
 endif()
 
